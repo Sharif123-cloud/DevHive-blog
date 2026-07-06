@@ -4,13 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DevHive — Blog & Community for Developers</title>
-
-    <!-- Font & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* ─── RESET & BASE ─── */
         *,
@@ -35,6 +33,1630 @@
             --border: #2a333e;
             --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
             --radius: 14px;
+            --radius-sm: 8px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --max-width: 960px;
+        }
+        .light {
+            --bg-primary: #f4f6fa;
+            --bg-secondary: #e8ecf2;
+            --bg-card: #ffffff;
+            --bg-input: #edf0f5;
+            --bg-hover: #e2e6ed;
+            --text-primary: #14181f;
+            --text-secondary: #3d4a5a;
+            --text-muted: #7a8a9e;
+            --border: #d0d7e2;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --accent-dim: rgba(79, 140, 255, 0.10);
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: var(--font);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background var(--transition), color var(--transition);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        button {
+            cursor: pointer;
+            font-family: var(--font);
+            border: none;
+            background: none;
+            color: inherit;
+            font-size: inherit;
+        }
+        input,
+        textarea,
+        select {
+            font-family: var(--font);
+            font-size: inherit;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            width: 100%;
+            transition: border var(--transition), box-shadow var(--transition);
+            outline: none;
+        }
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-dim);
+        }
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-size: 0.92rem;
+        }
+        ::selection {
+            background: var(--accent);
+            color: #fff;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* ─── UTILITY ─── */
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+        .flex {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .flex-col {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .flex-1 {
+            flex: 1;
+        }
+        .text-muted {
+            color: var(--text-muted);
+        }
+        .text-secondary {
+            color: var(--text-secondary);
+        }
+        .mt-16 {
+            margin-top: 16px;
+        }
+        .mb-16 {
+            margin-bottom: 16px;
+        }
+        .w-full {
+            width: 100%;
+        }
+        .hidden {
+            display: none !important;
+        }
+
+        /* ─── BUTTONS ─── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all var(--transition);
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(79, 140, 255, 0.3);
+        }
+        .btn-secondary {
+            background: var(--bg-input);
+            color: var(--text-primary);
+            border-color: var(--border);
+        }
+        .btn-secondary:hover {
+            background: var(--bg-hover);
+        }
+        .btn-danger {
+            background: #e74c3c;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 0.8rem;
+        }
+        .btn-lg {
+            padding: 12px 28px;
+            font-size: 1rem;
+        }
+
+        /* ─── HEADER ─── */
+        header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            transition: background var(--transition);
+        }
+        header .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+        }
+        .logo i {
+            color: var(--accent);
+            font-size: 1.6rem;
+        }
+        .logo span {
+            color: var(--accent);
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            transition: all var(--transition);
+            background: transparent;
+            border: none;
+        }
+        .nav-links a:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+        }
+        .nav-links a.active {
+            color: var(--accent);
+            background: var(--accent-dim);
+        }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .theme-toggle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            font-size: 1rem;
+        }
+        .theme-toggle:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        /* ─── CARDS ─── */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            transition: all var(--transition);
+            box-shadow: var(--shadow);
+        }
+        .card:hover {
+            border-color: var(--accent-dim);
+        }
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        .card-title a {
+            color: var(--text-primary);
+        }
+        .card-title a:hover {
+            color: var(--accent);
+        }
+        .card-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .card-meta .author {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .card-body {
+            margin: 10px 0 8px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+        }
+        .card-body.expanded {
+            -webkit-line-clamp: unset;
+        }
+        .card-footer {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .card-footer .stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .tag {
+            background: var(--accent-dim);
+            color: var(--accent);
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+        .tag.clickable {
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .tag.clickable:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+        .badge {
+            background: var(--accent-dim);
+            color: var(--accent);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* ─── COMMENTS ─── */
+        .comment {
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .comment:last-child {
+            border-bottom: none;
+        }
+        .comment .avatar-sm {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent-dim);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+        .comment .comment-body {
+            flex: 1;
+        }
+        .comment .comment-body .name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .comment .comment-body .time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        .comment .comment-body .text {
+            margin-top: 4px;
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+        }
+        .comment .comment-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 6px;
+            font-size: 0.8rem;
+        }
+        .comment .comment-actions button {
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            transition: color var(--transition);
+        }
+        .comment .comment-actions button:hover {
+            color: var(--accent);
+        }
+
+        /* ─── WRITE VIEW ─── */
+        .write-view .editor-toolbar {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .write-view .editor-toolbar button {
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all var(--transition);
+        }
+        .write-view .editor-toolbar button:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        .write-view .preview-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px 20px;
+            min-height: 120px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+        .write-view .preview-box pre {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            overflow-x: auto;
+            font-size: 0.82rem;
+        }
+        .write-view .preview-box code {
+            background: var(--bg-primary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.82rem;
+        }
+        .write-view .preview-box blockquote {
+            border-left: 4px solid var(--accent);
+            padding-left: 14px;
+            margin: 8px 0;
+            color: var(--text-muted);
+        }
+
+        /* ─── PROFILE VIEW ─── */
+        .profile-view .avatar-lg {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--accent-dim);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            border: 2px solid var(--border);
+        }
+        .profile-view .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin: 12px 0;
+        }
+        .profile-view .stat-grid .stat-item {
+            background: var(--bg-secondary);
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            text-align: center;
+        }
+        .profile-view .stat-grid .stat-item .num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .profile-view .stat-grid .stat-item .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ─── MESSAGES VIEW ─── */
+        .messages-view .msg-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .messages-view .msg-item {
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            transition: all var(--transition);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .messages-view .msg-item:hover {
+            background: var(--bg-hover);
+            border-color: var(--accent-dim);
+        }
+        .messages-view .msg-item .msg-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-dim);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        .messages-view .msg-item .msg-info {
+            flex: 1;
+        }
+        .messages-view .msg-item .msg-info .name {
+            font-weight: 600;
+        }
+        .messages-view .msg-item .msg-info .preview {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .messages-view .msg-item .msg-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .messages-view .msg-detail {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            padding: 16px 20px;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+        .messages-view .msg-detail .bubble {
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            max-width: 80%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+        }
+        .messages-view .msg-detail .bubble.me {
+            background: var(--accent);
+            color: #fff;
+            align-self: flex-end;
+            border-color: var(--accent);
+        }
+        .messages-view .msg-detail .bubble .time {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        .messages-view .msg-detail .bubble.me .time {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--border);
+            margin-bottom: 16px;
+            display: block;
+        }
+        .empty-state h3 {
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 360px;
+            width: 100%;
+        }
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 20px;
+            box-shadow: var(--shadow);
+            animation: slideUp 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+        .toast i {
+            font-size: 1.2rem;
+            color: var(--accent);
+        }
+        .toast.success i {
+            color: #2ecc71;
+        }
+        .toast.error i {
+            color: #e74c3c;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @media (max-width: 700px) {
+            header .container {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .nav-links {
+                justify-content: center;
+            }
+            .nav-actions {
+                justify-content: center;
+            }
+            .card {
+                padding: 16px;
+            }
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 12px;
+            }
+            .card-title {
+                font-size: 1rem;
+            }
+            .logo {
+                font-size: 1.1rem;
+            }
+        }
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 16px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <div class="logo"><i class="fas fa-code"></i>Dev<span>Hive</span></div>
+            <nav class="nav-links" id="navLinks">
+                <a href="#" data-view="home" class="active"><i class="fas fa-rss"></i> Feed</a>
+                <a href="#" data-view="write"><i class="fas fa-pen-fancy"></i> Write</a>
+                <a href="#" data-view="profile"><i class="fas fa-user"></i> Profile</a>
+                <a href="#" data-view="messages"><i class="fas fa-comments"></i> Messages</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="btn btn-primary btn-sm" id="loginBtn"><i class="fab fa-github"></i> Login</button>
+                <button class="btn btn-secondary btn-sm hidden" id="logoutBtn">Logout</button>
+                <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container" style="flex:1; padding-top:24px; padding-bottom:40px;">
+
+        <!-- VIEW: HOME -->
+        <section id="view-home" class="view">
+            <div class="flex" style="justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:20px;">
+                <h2 style="font-weight:700; font-size:1.6rem;"><i class="fas fa-rss" style="color:var(--accent);"></i> Feed</h2>
+                <div class="flex" style="gap:8px; flex-wrap:wrap;">
+                    <input type="text" id="searchInput" placeholder="Search..." style="width:200px; max-width:100%; padding:8px 14px; font-size:0.85rem;" />
+                    <select id="tagFilter" style="width:auto; padding:8px 14px; font-size:0.85rem;">
+                        <option value="">All Tags</option>
+                    </select>
+                </div>
+            </div>
+            <div id="blogFeed" class="flex-col gap-16"></div>
+        </section>
+
+        <!-- VIEW: WRITE -->
+        <section id="view-write" class="view write-view hidden">
+            <h2 style="font-weight:700; font-size:1.6rem; margin-bottom:16px;"><i class="fas fa-pen-fancy" style="color:var(--accent);"></i> Write a Blog</h2>
+            <input type="text" id="blogTitle" placeholder="Blog title..." style="font-size:1.3rem; font-weight:600; padding:12px 16px;" />
+            <div class="flex" style="gap:8px; margin-top:8px; flex-wrap:wrap;">
+                <input type="text" id="blogTags" placeholder="Tags (comma separated)" style="flex:1; min-width:120px; padding:8px 14px; font-size:0.85rem;" />
+                <select id="blogStatus" style="width:auto; padding:8px 14px; font-size:0.85rem;">
+                    <option value="published">Published</option>
+                    <option value="draft">Draft</option>
+                </select>
+            </div>
+            <div class="editor-toolbar" style="margin-top:12px;">
+                <button data-cmd="bold"><i class="fas fa-bold"></i></button>
+                <button data-cmd="italic"><i class="fas fa-italic"></i></button>
+                <button data-cmd="code"><i class="fas fa-code"></i></button>
+                <button data-cmd="quote"><i class="fas fa-quote-right"></i></button>
+                <button data-cmd="h2"><i class="fas fa-heading"></i> H2</button>
+                <button class="btn btn-secondary btn-sm" id="togglePreviewBtn"><i class="fas fa-eye"></i> Preview</button>
+            </div>
+            <textarea id="blogContent" placeholder="Write your blog content here... Markdown supported." style="min-height:280px; font-size:0.95rem; padding:14px 16px;"></textarea>
+            <div id="previewContainer" class="hidden" style="margin-top:12px;">
+                <div style="font-weight:600; font-size:0.85rem; color:var(--text-muted); margin-bottom:6px;"><i class="fas fa-eye"></i> Preview</div>
+                <div class="preview-box" id="livePreview"></div>
+            </div>
+            <div class="flex" style="margin-top:16px; gap:12px; flex-wrap:wrap;">
+                <button class="btn btn-primary btn-lg" id="publishBtn"><i class="fas fa-cloud-upload-alt"></i> Publish</button>
+                <button class="btn btn-secondary" id="saveDraftBtn"><i class="fas fa-save"></i> Save Draft</button>
+                <span id="editIdIndicator" style="font-size:0.85rem; color:var(--text-muted); margin-left:auto;"></span>
+            </div>
+        </section>
+
+        <!-- VIEW: PROFILE -->
+        <section id="view-profile" class="view profile-view hidden">
+            <div class="card">
+                <div class="flex" style="gap:20px; flex-wrap:wrap;">
+                    <div class="avatar-lg" id="profileAvatar">JD</div>
+                    <div class="flex-1">
+                        <h2 style="font-weight:700; font-size:1.6rem;" id="profileName">Loading...</h2>
+                        <div class="text-secondary" id="profileBio">Developer</div>
+                        <div class="flex" style="margin-top:8px; gap:12px; flex-wrap:wrap;">
+                            <span class="badge"><i class="fas fa-map-marker-alt"></i> <span id="profileLocation">Remote</span></span>
+                            <span class="badge"><i class="fas fa-calendar"></i> Joined <span id="profileJoined">Today</span></span>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" id="editProfileBtn"><i class="fas fa-pen"></i> Edit</button>
+                </div>
+            </div>
+            <div class="stat-grid" style="margin-top:16px;">
+                <div class="stat-item"><div class="num" id="statPosts">0</div><div class="label">Posts</div></div>
+                <div class="stat-item"><div class="num" id="statComments">0</div><div class="label">Comments</div></div>
+                <div class="stat-item"><div class="num" id="statLikes">0</div><div class="label">Likes Given</div></div>
+            </div>
+            <div style="margin-top:20px;">
+                <h3 style="font-weight:600; margin-bottom:12px;"><i class="fas fa-pen-fancy"></i> My Posts</h3>
+                <div id="myPosts" class="flex-col gap-12"></div>
+            </div>
+        </section>
+
+        <!-- VIEW: MESSAGES -->
+        <section id="view-messages" class="view messages-view hidden">
+            <h2 style="font-weight:700; font-size:1.6rem; margin-bottom:16px;"><i class="fas fa-comments" style="color:var(--accent);"></i> Messages</h2>
+            <div class="flex" style="gap:16px; flex-wrap:wrap;">
+                <div style="flex:1; min-width:240px;">
+                    <div class="card" style="max-height:500px; overflow-y:auto;">
+                        <div style="font-weight:600; margin-bottom:10px; font-size:0.9rem; color:var(--text-muted);">Conversations</div>
+                        <div id="conversationList" class="msg-list"></div>
+                    </div>
+                </div>
+                <div style="flex:2; min-width:280px;">
+                    <div class="card" style="max-height:500px; display:flex; flex-direction:column;">
+                        <div style="font-weight:600; margin-bottom:10px; font-size:0.9rem; color:var(--text-muted); display:flex; justify-content:space-between;">
+                            <span id="chatPartnerLabel">Select a conversation</span>
+                            <span id="chatUnreadBadge" class="badge hidden">0 unread</span>
+                        </div>
+                        <div id="chatMessages" class="msg-detail" style="flex:1; display:flex; flex-direction:column; gap:8px;">
+                            <div class="empty-state" style="padding:20px 0;">
+                                <i class="fas fa-comment-dots" style="font-size:2rem;"></i>
+                                <p style="font-size:0.9rem;">Choose a conversation to start chatting.</p>
+                            </div>
+                        </div>
+                        <div class="flex" style="margin-top:12px; gap:8px;">
+                            <input type="text" id="chatInput" placeholder="Type a message..." style="flex:1; padding:8px 14px;" />
+                            <button class="btn btn-primary" id="sendMsgBtn"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: DETAIL -->
+        <section id="view-detail" class="view blog-detail hidden">
+            <button class="btn btn-secondary btn-sm" id="backFromDetail" style="margin-bottom:16px;"><i class="fas fa-arrow-left"></i> Back to Feed</button>
+            <div id="blogDetailContainer"></div>
+        </section>
+
+    </main>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ─── SUPABASE CONFIG (⚠️ REPLACE WITH YOUR KEYS) ───
+            const SUPABASE_URL = 'https://oozsloiucannkxfldqnz.supabase.co'; // <-- Your Project URL
+            const SUPABASE_ANON_KEY = 'sb_publishable_FUbTI2GSOmlcipqrpgwNAg_2zBuw6lC'; // <-- Your Publishable Key
+
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            let currentUser = null;
+            let currentView = 'home';
+            let editingPostId = null;
+            let selectedConversationId = null;
+            let detailPostId = null;
+
+            // ─── HELPERS ───
+            function timeAgo(ts) {
+                const diff = Date.now() - new Date(ts).getTime();
+                const mins = Math.floor(diff / 60000);
+                if (mins < 1) return 'Just now';
+                if (mins < 60) return mins + 'm ago';
+                const hrs = Math.floor(mins / 60);
+                if (hrs < 24) return hrs + 'h ago';
+                const days = Math.floor(hrs / 24);
+                if (days < 7) return days + 'd ago';
+                return new Date(ts).toLocaleDateString();
+            }
+
+            function escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function formatContent(text) {
+                if (!text) return '';
+                let html = text;
+                html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, (_, lang, code) => {
+                    return `<pre><code>${escapeHtml(code.trim())}</code></pre>`;
+                });
+                html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+                html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+                html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+                html = html.replace(/^> (.*)$/gm, '<blockquote>$1</blockquote>');
+                html = html.replace(/^### (.*)$/gm, '<h3>$1</h3>');
+                html = html.replace(/^## (.*)$/gm, '<h2>$1</h2>');
+                html = html.replace(/\n/g, '<br />');
+                return html;
+            }
+
+            function getExcerpt(content, len = 160) {
+                const plain = formatContent(content).replace(/<[^>]+>/g, '');
+                return plain.length > len ? plain.slice(0, len) + '...' : plain;
+            }
+
+            function getInitials(name) {
+                if (!name) return '??';
+                return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+            }
+
+            function showToast(message, type = 'info') {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' :
+                    'fa-info-circle';
+                toast.innerHTML = `<i class="fas ${icon}"></i> ${escapeHtml(message)}`;
+                container.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(30px)';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+
+            // ─── AUTH ───
+            async function initAuth() {
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session?.user) {
+                    const user = session.user;
+                    currentUser = {
+                        id: user.id,
+                        name: user.user_metadata?.full_name || user.email || 'User',
+                        email: user.email,
+                        avatar: getInitials(user.user_metadata?.full_name || user.email || 'User')
+                    };
+                    await ensureProfile(user);
+                    document.getElementById('loginBtn').classList.add('hidden');
+                    document.getElementById('logoutBtn').classList.remove('hidden');
+                    renderFeed();
+                    renderProfile();
+                    renderMessages();
+                } else {
+                    document.getElementById('loginBtn').classList.remove('hidden');
+                    document.getElementById('logoutBtn').classList.add('hidden');
+                    renderFeed();
+                }
+            }
+
+            async function ensureProfile(user) {
+                const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+                if (!data) {
+                    await supabase.from('profiles').insert([{
+                        id: user.id,
+                        name: user.user_metadata?.full_name || user.email || 'Developer',
+                        avatar: getInitials(user.user_metadata?.full_name || user.email || 'Developer')
+                    }]);
+                }
+            }
+
+            async function login() {
+                await supabase.auth.signInWithOAuth({ provider: 'github' });
+            }
+
+            async function logout() {
+                await supabase.auth.signOut();
+                currentUser = null;
+                location.reload();
+            }
+
+            // ─── POSTS ───
+            async function loadPosts() {
+                const { data, error } = await supabase
+                    .from('posts')
+                    .select('*, profiles(name)')
+                    .order('created_at', { ascending: false });
+                if (error) {
+                    console.error('loadPosts error:', error);
+                    return [];
+                }
+                return data || [];
+            }
+
+            async function publishPost(title, content, tags, status) {
+                if (!currentUser) { showToast('Please login first.', 'error'); return; }
+                const { error } = await supabase.from('posts').insert([{
+                    title,
+                    content,
+                    tags,
+                    status,
+                    author_id: currentUser.id
+                }]);
+                if (error) { showToast('Error: ' + error.message, 'error'); } else { showToast('Published! 🎉',
+                        'success'); }
+                renderFeed();
+                renderProfile();
+            }
+
+            async function updatePost(postId, title, content, tags, status) {
+                const { error } = await supabase
+                    .from('posts')
+                    .update({ title, content, tags, status, updated_at: new Date().toISOString() })
+                    .eq('id', postId)
+                    .eq('author_id', currentUser.id);
+                if (error) { showToast('Error: ' + error.message, 'error'); } else { showToast('Updated!', 'success'); }
+                renderFeed();
+                renderProfile();
+            }
+
+            async function deletePost(postId) {
+                if (!currentUser) return;
+                const { error } = await supabase
+                    .from('posts')
+                    .delete()
+                    .eq('id', postId)
+                    .eq('author_id', currentUser.id);
+                if (error) { showToast('Error: ' + error.message, 'error'); } else { showToast('Post deleted.', 'info'); }
+                if (detailPostId === postId) { detailPostId = null;
+                    switchView('home'); }
+                renderFeed();
+                renderProfile();
+            }
+
+            async function toggleLike(postId) {
+                if (!currentUser) { showToast('Login to like.', 'error'); return; }
+                const post = (await loadPosts()).find(p => p.id === postId);
+                if (!post) return;
+                const liked = post.liked_by || [];
+                const idx = liked.indexOf(currentUser.id);
+                let newLikes = post.likes || 0;
+                let newLikedBy = [...liked];
+                if (idx > -1) {
+                    newLikedBy.splice(idx, 1);
+                    newLikes = Math.max(0, newLikes - 1);
+                } else {
+                    newLikedBy.push(currentUser.id);
+                    newLikes += 1;
+                }
+                await supabase.from('posts')
+                    .update({ likes: newLikes, liked_by: newLikedBy })
+                    .eq('id', postId);
+                renderFeed();
+                if (detailPostId) renderDetail(detailPostId);
+            }
+
+            // ─── COMMENTS ───
+            async function addComment(postId, content) {
+                if (!currentUser) { showToast('Login to comment.', 'error'); return; }
+                await supabase.from('comments').insert([{
+                    post_id: postId,
+                    author_id: currentUser.id,
+                    content
+                }]);
+                renderDetail(postId);
+                renderFeed();
+            }
+
+            async function addReply(postId, commentId, content) {
+                if (!currentUser) { showToast('Login to reply.', 'error'); return; }
+                await supabase.from('comments').insert([{
+                    post_id: postId,
+                    author_id: currentUser.id,
+                    content,
+                    parent_id: commentId
+                }]);
+                renderDetail(postId);
+                renderFeed();
+            }
+
+            async function loadComments(postId) {
+                const { data } = await supabase
+                    .from('comments')
+                    .select('*, profiles(name)')
+                    .eq('post_id', postId)
+                    .order('created_at', { ascending: true });
+                return data || [];
+            }
+
+            // ─── MESSAGES ───
+            async function loadMessages() {
+                if (!currentUser) return [];
+                const { data, error } = await supabase
+                    .from('messages')
+                    .select('*, sender:profiles!sender_id(name), receiver:profiles!receiver_id(name)')
+                    .or(`sender_id.eq.${currentUser.id},receiver_id.eq.${currentUser.id}`)
+                    .order('created_at', { ascending: false });
+                if (error) return [];
+                return data || [];
+            }
+
+            async function sendMessage(receiverId, text) {
+                if (!currentUser) { showToast('Login to message.', 'error'); return; }
+                await supabase.from('messages').insert([{
+                    sender_id: currentUser.id,
+                    receiver_id: receiverId,
+                    text
+                }]);
+            }
+
+            // ─── RENDER FUNCTIONS ───
+            async function renderFeed() {
+                const container = document.getElementById('blogFeed');
+                const search = document.getElementById('searchInput').value.toLowerCase().trim();
+                const tagFilter = document.getElementById('tagFilter').value;
+
+                const posts = await loadPosts();
+                let filtered = posts.filter(p => p.status === 'published' || p.author_id === currentUser?.id);
+
+                if (search) {
+                    filtered = filtered.filter(p =>
+                        p.title.toLowerCase().includes(search) ||
+                        p.content.toLowerCase().includes(search) ||
+                        (p.tags && p.tags.some(t => t.includes(search)))
+                    );
+                }
+                if (tagFilter) {
+                    filtered = filtered.filter(p => p.tags && p.tags.includes(tagFilter));
+                }
+
+                if (filtered.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-newspaper"></i>
+                            <h3>No posts found</h3>
+                            <p>Be the first to share your knowledge!</p>
+                            ${currentUser ? '<button class="btn btn-primary" onclick="window.switchView(\'write\')" style="margin-top:12px;"><i class="fas fa-pen-fancy"></i> Write a Blog</button>' : '<p class="text-muted" style="margin-top:12px;">Login to write your first post.</p>'}
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = filtered.map(p => {
+                    const isLiked = p.liked_by && p.liked_by.includes(currentUser?.id);
+                    const authorName = p.profiles?.name || 'Unknown';
+                    const commentCount = 0; // We'll simplify
+                    return `
+                        <div class="card" data-postid="${p.id}">
+                            <div class="card-title">
+                                <a href="#" class="post-detail-link" data-id="${p.id}">${escapeHtml(p.title)}</a>
+                            </div>
+                            <div class="card-meta">
+                                <span class="author"><i class="fas fa-user-circle"></i> ${escapeHtml(authorName)}</span>
+                                <span><i class="far fa-clock"></i> ${timeAgo(p.created_at)}</span>
+                                ${p.status === 'draft' ? '<span class="badge" style="background:#f39c12;color:#fff;">Draft</span>' : ''}
+                            </div>
+                            <div class="card-body">${formatContent(getExcerpt(p.content, 200))}</div>
+                            ${p.tags && p.tags.length ? `<div class="tags">${p.tags.map(t => `<span class="tag clickable" data-tag="${escapeHtml(t)}">#${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+                            <div class="card-footer">
+                                <span class="stat"><i class="far fa-heart"></i> <span class="like-count">${p.likes || 0}</span></span>
+                                <span class="stat"><i class="far fa-comment"></i> 0</span>
+                                ${p.author_id === currentUser?.id ? `
+                                    <span style="margin-left:auto; display:flex; gap:6px;">
+                                        <button class="btn btn-secondary btn-sm edit-post-btn" data-id="${p.id}"><i class="fas fa-pen"></i></button>
+                                        <button class="btn btn-danger btn-sm delete-post-btn" data-id="${p.id}"><i class="fas fa-trash"></i></button>
+                                    </span>
+                                ` : `
+                                    <span style="margin-left:auto;">
+                                        <button class="btn btn-sm ${isLiked ? 'btn-primary' : 'btn-secondary'} like-btn" data-id="${p.id}">
+                                            <i class="fas fa-heart"></i> ${isLiked ? 'Liked' : 'Like'}
+                                        </button>
+                                    </span>
+                                `}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                container.querySelectorAll('.post-detail-link').forEach(el => {
+                    el.addEventListener('click', (e) => { e.preventDefault();
+                        showDetail(el.dataset.id); });
+                });
+                container.querySelectorAll('.tag.clickable').forEach(el => {
+                    el.addEventListener('click', () => { document.getElementById('tagFilter').value = el.dataset.tag;
+                        renderFeed(); });
+                });
+                container.querySelectorAll('.like-btn').forEach(el => {
+                    el.addEventListener('click', () => toggleLike(el.dataset.id));
+                });
+                container.querySelectorAll('.edit-post-btn').forEach(el => {
+                    el.addEventListener('click', () => editPost(el.dataset.id));
+                });
+                container.querySelectorAll('.delete-post-btn').forEach(el => {
+                    el.addEventListener('click', () => { if (confirm('Delete?')) deletePost(el.dataset.id); });
+                });
+
+                // Update tag filter options
+                const allTags = new Set();
+                posts.forEach(p => { if (p.tags) p.tags.forEach(t => allTags.add(t)); });
+                const tagSelect = document.getElementById('tagFilter');
+                const currentVal = tagSelect.value;
+                tagSelect.innerHTML = '<option value="">All Tags</option>' +
+                    Array.from(allTags).sort().map(t => `<option value="${escapeHtml(t)}">#${escapeHtml(t)}</option>`).join(
+                    '');
+                tagSelect.value = currentVal;
+            }
+
+            async function renderDetail(postId) {
+                const container = document.getElementById('blogDetailContainer');
+                const posts = await loadPosts();
+                const p = posts.find(post => post.id === postId);
+                if (!p) {
+                    container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Post not found</h3></div>';
+                    return;
+                }
+                const authorName = p.profiles?.name || 'Unknown';
+                const isLiked = p.liked_by && p.liked_by.includes(currentUser?.id);
+                const comments = await loadComments(postId);
+
+                let html = `
+                    <div class="card">
+                        <div class="card-title" style="font-size:1.6rem;">${escapeHtml(p.title)}</div>
+                        <div class="card-meta">
+                            <span class="author"><i class="fas fa-user-circle"></i> ${escapeHtml(authorName)}</span>
+                            <span><i class="far fa-clock"></i> ${timeAgo(p.created_at)}</span>
+                        </div>
+                        ${p.tags && p.tags.length ? `<div class="tags">${p.tags.map(t => `<span class="tag">#${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+                        <div class="card-body" style="-webkit-line-clamp:unset;display:block;">${formatContent(p.content)}</div>
+                        <div class="card-footer">
+                            <span class="stat"><button class="like-btn-detail" data-id="${p.id}"><i class="fas fa-heart"></i> ${p.likes || 0}</button></span>
+                            ${p.author_id === currentUser?.id ? `
+                                <span style="margin-left:auto; display:flex; gap:6px;">
+                                    <button class="btn btn-secondary btn-sm edit-post-btn" data-id="${p.id}"><i class="fas fa-pen"></i> Edit</button>
+                                    <button class="btn btn-danger btn-sm delete-post-btn" data-id="${p.id}"><i class="fas fa-trash"></i></button>
+                                </span>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div style="margin-top:20px;">
+                        <h3 style="font-weight:600; margin-bottom:12px;"><i class="fas fa-comments"></i> Comments (${comments.length})</h3>
+                        <div id="commentSection">
+                `;
+
+                if (comments.length) {
+                    comments.forEach(c => {
+                        const cAuthor = c.profiles?.name || 'Unknown';
+                        html += `
+                            <div class="comment">
+                                <div class="flex" style="align-items:flex-start; gap:10px;">
+                                    <div class="avatar-sm">${escapeHtml(getInitials(cAuthor))}</div>
+                                    <div class="comment-body">
+                                        <div class="flex" style="justify-content:space-between; flex-wrap:wrap;">
+                                            <span class="name">${escapeHtml(cAuthor)}</span>
+                                            <span class="time">${timeAgo(c.created_at)}</span>
+                                        </div>
+                                        <div class="text">${escapeHtml(c.content)}</div>
+                                        <div class="comment-actions">
+                                            <button class="reply-comment-btn" data-id="${c.id}"><i class="fas fa-reply"></i> Reply</button>
+                                        </div>
+                                        <div class="reply-form-container" style="margin-top:8px; display:none;" data-comment="${c.id}">
+                                            <div class="flex" style="gap:8px;">
+                                                <input type="text" class="reply-input" placeholder="Write a reply..." style="flex:1; padding:6px 12px; font-size:0.85rem;" />
+                                                <button class="btn btn-primary btn-sm submit-reply-btn" data-comment="${c.id}" data-post="${p.id}"><i class="fas fa-paper-plane"></i></button>
+                                            </div>
+                                        </div>
+                                        ${c.parent_id ? '' : `<div class="replies-container" style="margin-top:8px; margin-left:40px;"></div>`}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html += `<div class="text-muted" style="padding:12px 0;">No comments yet.</div>`;
+                }
+
+                html += `
+                        </div>
+                        <div style="margin-top:16px; border-top:1px solid var(--border); padding-top:16px;">
+                            <div class="flex" style="gap:10px;">
+                                <div style="flex:1;">
+                                    <input type="text" id="newCommentInput" placeholder="Write a comment..." style="padding:8px 14px; font-size:0.9rem;" />
+                                    <button class="btn btn-primary btn-sm" id="submitCommentBtn" style="margin-top:6px;" data-post="${p.id}"><i class="fas fa-paper-plane"></i> Comment</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                container.innerHTML = html;
+
+                container.querySelector('.like-btn-detail')?.addEventListener('click', () => toggleLike(p.id));
+                container.querySelectorAll('.edit-post-btn').forEach(el => {
+                    el.addEventListener('click', () => editPost(el.dataset.id));
+                });
+                container.querySelectorAll('.delete-post-btn').forEach(el => {
+                    el.addEventListener('click', () => { if (confirm('Delete?')) deletePost(el.dataset.id); });
+                });
+                container.querySelectorAll('.reply-comment-btn').forEach(el => {
+                    el.addEventListener('click', () => {
+                        const container = el.closest('.comment').querySelector('.reply-form-container');
+                        if (container) container.style.display = container.style.display === 'none' ? 'flex' :
+                            'none';
+                    });
+                });
+                container.querySelectorAll('.submit-reply-btn').forEach(el => {
+                    el.addEventListener('click', () => {
+                        const postId = el.dataset.post;
+                        const commentId = el.dataset.comment;
+                        const input = el.closest('.reply-form-container').querySelector('.reply-input');
+                        if (input && input.value.trim()) {
+                            addReply(postId, commentId, input.value.trim());
+                            input.value = '';
+                            renderDetail(postId);
+                        }
+                    });
+                });
+                document.getElementById('submitCommentBtn')?.addEventListener('click', () => {
+                    const input = document.getElementById('newCommentInput');
+                    if (input && input.value.trim()) {
+                        addComment(p.id, input.value.trim());
+                        input.value = '';
+                        renderDetail(p.id);
+                    }
+                });
+            }
+
+            async function renderProfile() {
+                if (!currentUser) {
+                    document.getElementById('profileName').textContent = 'Not Logged In';
+                    document.getElementById('profileBio').textContent = 'Login to see your profile.';
+                    document.getElementById('myPosts').innerHTML =
+                        '<div class="text-muted">Login to view your posts.</div>';
+                    return;
+                }
+                const u = currentUser;
+                document.getElementById('profileAvatar').textContent = u.avatar || getInitials(u.name);
+                document.getElementById('profileName').textContent = u.name;
+                document.getElementById('profileBio').textContent = u.bio || 'Developer';
+
+                const posts = await loadPosts();
+                const myPosts = posts.filter(p => p.author_id === u.id);
+                document.getElementById('statPosts').textContent = myPosts.length;
+
+                const container = document.getElementById('myPosts');
+                if (myPosts.length === 0) {
+                    container.innerHTML =
+                        `<div class="text-muted" style="padding:12px 0;">You haven't written any posts yet. <a href="#" onclick="window.switchView('write')">Write one now!</a></div>`;
+                    return;
+                }
+                container.innerHTML = myPosts.map(p => `
+                    <div class="card" style="padding:12px 16px;">
+                        <div class="flex" style="justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                            <div>
+                                <a href="#" class="post-detail-link" data-id="${p.id}" style="font-weight:600;">${escapeHtml(p.title)}</a>
+                                <div class="text-muted" style="font-size:0.8rem;">${timeAgo(p.created_at)} · ${p.status}</div>
+                            </div>
+                            <div class="flex" style="gap:6px;">
+                                <button class="btn btn-secondary btn-sm edit-post-btn" data-id="${p.id}"><i class="fas fa-pen"></i></button>
+                                <button class="btn btn-danger btn-sm delete-post-btn" data-id="${p.id}"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                container.querySelectorAll('.post-detail-link').forEach(el => {
+                    el.addEventListener('click', (e) => { e.preventDefault();
+                        showDetail(el.dataset.id); });
+                });
+                container.querySelectorAll('.edit-post-btn').forEach(el => {
+                    el.addEventListener('click', () => editPost(el.dataset.id));
+                });
+                container.querySelectorAll('.delete-post-btn').forEach(el => {
+                    el.addEventListener('click', () => { if (confirm('Delete?')) deletePost(el.dataset.id); });
+                });
+            }
+
+            async function renderMessages() {
+                const list = document.getElementById('conversationList');
+                if (!currentUser) {
+                    list.innerHTML =
+                        `<div class="text-muted" style="padding:12px 0; text-align:center;">Login to see messages.</div>`;
+                    return;
+                }
+                const msgs = await loadMessages();
+                if (msgs.length === 0) {
+                    list.innerHTML =
+                        `<div class="text-muted" style="padding:12px 0; text-align:center;">No conversations yet.</div>`;
+                    return;
+                }
+                // Group by other user
+                const convMap = new Map();
+                msgs.forEach(m => {
+                    const otherId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
+                    const otherName = m.sender_id === currentUser.id ? m.receiver?.name : m.sender?.name;
+                    if (!convMap.has(otherId)) {
+                        convMap.set(otherId, { otherId, otherName, messages: [], lastActivity: m.created_at });
+                    }
+                    convMap.get(otherId).messages.push(m);
+                });
+
+                const sorted = Array.from(convMap.values()).sort((a, b) => new Date(b.lastActivity) - new Date(a
+                .lastActivity));
+
+                list.innerHTML = sorted.map(conv => {
+                    const last = conv.messages[conv.messages.length - 1];
+                    return `
+                        <div class="msg-item ${selectedConversationId === conv.otherId ? 'active' : ''}" data-id="${conv.otherId}" style="${selectedConversationId === conv.otherId ? 'border-color:var(--accent);' : ''}">
+                            <div class="msg-avatar">${escapeHtml(getInitials(conv.otherName || 'U'))}</div>
+                            <div class="msg-info">
+                                <div class="name">${escapeHtml(conv.otherName || 'Unknown')}</div>
+                                <div class="preview">${escapeHtml(last?.text?.substring(0, 40) || 'No messages')}</div>
+                            </div>
+                            <span class="msg-time">${timeAgo(last?.created_at)}</span>
+                        </div>
+                    `;
+                }).join('');
+
+                list.querySelectorAll('.msg-item').forEach(el => {
+                    el.addEventListener('click', () => {
+                        selectedConversationId = el.dataset.id;
+                        renderMessages();
+                        renderChat(el.dataset.id);
+                    });
+                });
+            }
+
+            async function renderChat(otherUserId) {
+                const container = document.getElementById('chatMessages');
+                const label = document.getElementById('chatPartnerLabel');
+                if (!otherUserId || !currentUser) {
+                    container.innerHTML =
+                        `<div class="empty-state" style="padding:20px 0;"><i class="fas fa-comment-dots" style="font-size:2rem;"></i><p style="font-size:0.9rem;">Choose a conversation.</p></div>`;
+                    label.textContent = 'Select a conversation';
+                    return;
+                }
+                const msgs = await loadMessages();
+                const convMsgs = msgs.filter(m =>
+                    (m.sender_id === currentUser.id && m.receiver_id === otherUserId) ||
+                    (m.sender_id === otherUserId && m.receiver_id === currentUser.id)
+                ).sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+                const otherUser = convMsgs.length > 0 ?
+                    (convMsgs[0].sender_id === otherUserId ? convMsgs[0].sender : convMsgs[0].receiver) :
+                    { name: 'User' };
+                label.textContent = otherUser?.name || 'User';
+
+                if (convMsgs.length === 0) {
+                    container.innerHTML =
+                        `<div class="text-muted" style="padding:20px 0; text-align:center;">No messages yet. Say hello!</div>`;
+                    return;
+                }
+                container.innerHTML = convMsgs.map(m => {
+                    const isMe = m.sender_id === currentUser.id;
+                    const senderName = isMe ? 'You' : m.sender?.name || 'User';
+                    return `
+                        <div class="bubble ${isMe ? 'me' : ''}" style="align-self:${isMe ? 'flex-end' : 'flex-start'};">
+                            <div style="font-size:0.8rem; font-weight:600; ${isMe ? 'color:rgba(255,255,255,0.8);' : 'color:var(--text-secondary);'}">${escapeHtml(senderName)}</div>
+                            <div>${escapeHtml(m.text)}</div>
+                            <div class="time">${timeAgo(m.created_at)}</div>
+                        </div>
+                    `;
+                }).join('');
+                container.scrollTop = container.scrollHeight;
+            }
+
+            // ─── VIEW SWITCHING ───
+            function switchView(view) {
+                currentView = view;
+                document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+                const map = { home: 'view-home', write: 'view-write', profile: 'view-profile',
+                    messages: 'view-messages', detail: 'view-detail' };
+                const el = document.getElementById(map[view]);
+                if (el) el.classList.remove('hidden');
+                if (view === 'home') renderFeed();
+                if (view === 'profile') renderProfile();
+                if (view === 'messages') { renderMessages(); if (selectedConversationId) renderChat(
+                        selectedConversationId); }
+                if (view !== 'detail') detailPostId = null;
+                document.querySelectorAll('#navLinks a').forEach(a => {
+                    a.classList.toggle('active', a.dataset.view === view);
+                });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function showDetail(postId) {
+                detailPostId = postId;
+                document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+                document.getElementById('view-detail').classList.remove('hidden');
+                currentView = 'detail';
+                renderDetail(postId);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function editPost(postId) {
+                loadPosts().then(posts => {
+                    const post = posts.find(p => p.id === postId);
+                    if (!post) return;
+                    editingPostId = postId;
+                    document.getElementById('blogTitle').value = post.title;
+                    document.getElementById('blogContent').value = post.content;
+                    document.getElementById('blogTags').value = (post.tags || []).join(', ');
+                    document.getElementById('blogStatus').value = post.status || 'published';
+                    document.getElementById('editIdIndicator').textContent = 'Editing: ' + post.title;
+                    switchView('write');
+                });
+            }
+
+            // ─── WRITE ───
+            function handlePublish() {
+                const title = document.getElementById('blogTitle').value.trim();
+                const content = document.getElementById('blogContent').value.trim();
+                const tags = document.getElementById('blogTags').value.trim().split(',').map(s => s.trim()).filter(Boolean);
+                const status = document.getElementById('blogStatus').value;
+                if (!title) { showToast('Enter a title.', 'error'); return; }
+                if (!content) { showToast('Write some content.', 'error'); return; }
+                if (editingPostId) {
+                    updatePost(editingPostId, title, content, tags, status);
+                    editingPostId = null;
+                    document.getElementById('editIdIndicator').textContent = '';
+                } else {
+                    publishPost(title, content, tags, status);
+                }
+                document.getElementById('blogTitle').value = '';
+                document.getElementById('blogContent').value = '';
+                document.getElementById('blogTags').value = '';
+                document.getElementById('blogStatus').value = 'published';
+                document.getElementById('previewContainer').classList.add('hidden');
+                switchView('home');
+            }
+
+            function saveDraft() {
+                const title = document.getElementById('blogTitle').value.trim();
+                const content = document.getElementById('blogContent').value.trim();
+                const tags = document.getElementById('blogTags').value.trim().split(',').map(s => s.trim()).filter(Boolean);
+                if (!title && !content) { showToast('Nothing to save.', 'info'); return; }
+                if (editingPostId) {
+                    updatePost(editingPostId, title || 'Untitled', content || ' ', tags, 'draft');
+                } else {
+                    publishPost(title || 'Untitled', content || ' ', tags, 'draft');
+                }
+                editingPostId = null;
+                document.getElementById('editIdIndicator').textContent = '';
+                showToast('Draft saved!', 'success');
+                switchView('home');
+            }
+
+            // ─── THEME ───
+            function toggleTheme() {
+                document.body.classList.toggle('light');
+                const icon = document.querySelector('#themeToggle i');
+                icon.className = document.body.classList.contains('light') ? 'fas fa-sun' : 'fas fa-moon';
+                localStorage.setItem('devhive_theme', document.body.classList.contains('light') ? 'light' : 'dark');
+            }
+
+            function loadTheme() {
+                if (localStorage.getItem('devhive_theme') === 'light') {
+                    document.body.classList.add('light');
+                    document.querySelector('#themeToggle i').className = 'fas fa-sun';
+                }
+            }
+
+            // ─── SUBSCRIPTIONS ───
+            function subscribeRealtime() {
+                supabase.channel('public:posts')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => {
+                        if (currentView === 'home') renderFeed();
+                        if (currentView === 'profile') renderProfile();
+                    })
+                    .subscribe();
+
+                supabase.channel('public:messages')
+                    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => {
+                        if (currentView === 'messages') {
+                            renderMessages();
+                            if (selectedConversationId) renderChat(selectedConversationId);
+                        }
+                    })
+                    .subscribe();
+            }
+
+            // ─── INIT ───
+            function init() {
+                loadTheme();
+
+                document.querySelectorAll('#navLinks a').forEach(a => {
+                    a.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        switchView(a.dataset.view);
+                    });
+                });
+
+                document.getElementById('loginBtn').addEventListener('click', login);
+                document.getElementById('logoutBtn').addEventListener('click', logout);
+                document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+                document.getElementById('searchInput').addEventListener('input', renderFeed);
+
+                document.getElementById('publishBtn').addEventListener('click', handlePublish);
+                document.getElementById('saveDraftBtn').addEventListener('click', saveDraft);
+                document.getElementById('togglePreviewBtn').addEventListener('click', () => {
+                    const c = document.getElementById('previewContainer');
+                    c.classList.toggle('hidden');
+                    if (!c.classList.contains('hidden')) {
+                        document.getElementById('livePreview').innerHTML = formatContent(document.getElementById(
+                            'blogContent').value) || '<span class="text-muted">Preview...</span>';
+                    }
+                });
+                document.getElementById('blogContent').addEventListener('input', () => {
+                    document.getElementById('livePreview').innerHTML = formatContent(document.getElementById(
+                        'blogContent').value) || '<span class="text-muted">Preview...</span>';
+                });
+                document.querySelectorAll('.editor-toolbar button[data-cmd]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const cmd = btn.dataset.cmd;
+                        const ta = document.getElementById('blogContent');
+                        const start = ta.selectionStart,
+                            end = ta.selectionEnd,
+                            sel = ta.value.substring(start, end);
+                        let repl = '';
+                        if (cmd === 'bold') repl = `**${sel||'bold'}**`;
+                        else if (cmd === 'italic') repl = `*${sel||'italic'}*`;
+                        else if (cmd === 'code') repl = `\`${sel||'code'}\``;
+                        else if (cmd === 'quote') repl = `> ${sel||'quote'}`;
+                        else if (cmd === 'h2') repl = `## ${sel||'Heading'}`;
+                        else if (cmd === 'h3') repl = `### ${sel||'Heading'}`;
+                        const newVal = ta.value.substring(0, start) + repl + ta.value.substring(end);
+                        ta.value = newVal;
+                        ta.focus();
+                        ta.setSelectionRange(start + repl.length, start + repl.length);
+                        document.getElementById('livePreview').innerHTML = formatContent(newVal) ||
+                            '<span class="text-muted">Preview...</span>';
+                    });
+                });
+
+                document.getElementById('sendMsgBtn').addEventListener('click', async () => {
+                    const input = document.getElementById('chatInput');
+                    const text = input.value.trim();
+                    if (!text || !selectedConversationId) {
+                        if (!selectedConversationId) showToast('Select a conversation first.', 'error');
+                        return;
+                    }
+                    await sendMessage(selectedConversationId, text);
+                    input.value = '';
+                    renderMessages();
+                    renderChat(selectedConversationId);
+                });
+                document.getElementById('chatInput').addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') document.getElementById('sendMsgBtn').click();
+                });
+
+                document.getElementById('backFromDetail').addEventListener('click', () => switchView('home'));
+
+                document.getElementById('editProfileBtn').addEventListener('click', () => {
+                    if (!currentUser) { showToast('Login first.', 'error'); return; }
+                    const name = prompt('Name:', currentUser.name);
+                    if (name && name.trim()) {
+                        currentUser.name = name.trim();
+                        currentUser.avatar = getInitials(name.trim());
+                        supabase.from('profiles').update({ name: name.trim() }).eq('id', currentUser.id);
+                        renderProfile();
+                        showToast('Profile updated!', 'success');
+                    }
+                    const bio = prompt('Bio:', currentUser.bio || '');
+                    if (bio !== null) {
+                        currentUser.bio = bio.trim() || 'Developer';
+                        supabase.from('profiles').update({ bio: currentUser.bio }).eq('id', currentUser.id);
+                        renderProfile();
+                    }
+                });
+
+                window.switchView = switchView;
+
+                subscribeRealtime();
+                initAuth();
+
+                console.log('🚀 DevHive with Supabase ready!');
+            }
+
+            document.addEventListener('DOMContentLoaded', init);
+
+        })();
+    </script>
+</body>
+    </html>            --radius: 14px;
             --radius-sm: 8px;
             --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
